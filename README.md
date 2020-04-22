@@ -5,7 +5,7 @@ Pull your project git code into a data volume and trigger event via Webhook.
 [![Docker Stars](https://img.shields.io/docker/stars/funnyzak/git-webhook.svg?style=flat-square)](https://hub.docker.com/r/funnyzak/git-webhook/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/funnyzak/git-webhook.svg?style=flat-square)](https://hub.docker.com/r/funnyzak/git-webhook/)
 
-This image is based on Alpine Linux image, which is a 420MB image.
+This image is based on Alpine Linux image, which is a 433MB image.
 
 Download size of this image is:
 
