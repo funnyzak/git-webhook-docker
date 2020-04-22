@@ -1,0 +1,48 @@
+[
+  {
+    "id": "git-webhook",
+    "execute-command": "/app/hook/hook.sh",
+    "command-working-directory": "/app/code",
+    "pass-environment-to-command": [
+      {
+        "source": "payload",
+        "name": "head_commit.id",
+        "envname": "GIT_COMMIT_ID"
+      },
+      {
+        "source": "payload",
+        "name": "pusher.name",
+        "envname": "PUSHER_NAME"
+      },
+      {
+        "source": "payload",
+        "name": "pusher.email",
+        "envname": "PUSHER_EMAIL"
+      }
+    ],
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "value",
+            "value": "refs/heads/${branch}",
+            "parameter": {
+              "source": "payload",
+              "name": "ref"
+            }
+          }
+        },
+        {
+          "match": {
+            "type": "value",
+            "value": "${token}",
+            "parameter": {
+              "source": "url",
+              "name": "token"
+            }
+          }
+        }
+      ]
+    }
+  }
+]
