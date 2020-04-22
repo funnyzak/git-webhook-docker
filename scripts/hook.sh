@@ -2,12 +2,16 @@
 
 set -e
 
+echo "starting run hook script================================"
+
 cd /app/code
 
 # git pull code before script run
 if [ -n "$BEFORE_PULL_COMMANDS" ]; then
     echo "git pull code before command do: ${BEFORE_PULL_COMMANDS}" 
     $BEFORE_PULL_COMMANDS || (echo "git pull code before Command failed. Aborting!"; exit 1)
+else
+    echo "no before pull command. skiped."
 fi
 
 echo "git pull code before shell do..." 
@@ -24,8 +28,11 @@ echo "git pull code end."
 if [ -n "$AFTER_PULL_COMMANDS" ]; then
     echo "git pull code after command do: ${AFTER_PULL_COMMANDS}" 
     $AFTER_PULL_COMMANDS || (echo "git pull code after Command failed. Aborting!"; exit 1)
+else
+    echo "no after pull command. skiped."
 fi
 
 echo "git pull code after shell do..." 
 source /usr/bin/run_scripts_after_pull.sh
 
+echo "end run hook script================================"

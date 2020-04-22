@@ -46,6 +46,8 @@ chmod +x -R /custom_scripts
 if [ -n "$STARTUP_COMMANDS" ]; then
   echo "on startup command do: ${STARTUP_COMMANDS}" 
   eval "$STARTUP_COMMANDS"
+else
+    echo "no startup command. skiped."
 fi
 
 
@@ -67,5 +69,6 @@ if [ -n "$USE_HOOK" ]; then
   echo "start hook..."
   /go/bin/webhook -hooks /app/hook/githooks.json -verbose
 else
+  echo "no set USE_HOOK. will run in 23h."
   while sleep 23h; do sh /app/hook/hook.sh; done
 fi
