@@ -24,15 +24,19 @@ COPY scripts/hook.sh /app/hook/hook.sh
 
 # Copy our Scripts
 COPY scripts/start.sh /usr/bin/start.sh
+COPY scripts/utils.sh /app/scripts/utils.sh
 COPY scripts/run_scripts_after_pull.sh /usr/bin/run_scripts_after_pull.sh
 COPY scripts/run_scripts_before_pull.sh /usr/bin/run_scripts_before_pull.sh
 COPY scripts/run_scripts_on_startup.sh /usr/bin/run_scripts_on_startup.sh
+COPY scripts/run_scripts_after_package.sh /usr/bin/run_scripts_after_package.sh
 
 # Add permissions to our scripts
+RUN chmod +x /app/scripts/utils.sh
 RUN chmod +x /app/hook/hook.sh
 RUN chmod +x /usr/bin/run_scripts_after_pull.sh
 RUN chmod +x /usr/bin/run_scripts_before_pull.sh
 RUN chmod +x /usr/bin/run_scripts_on_startup.sh
+RUN chmod +x /usr/bin/run_scripts_after_package.sh
 
 # Add any user custom scripts + set permissions
 ADD custom_scripts /custom_scripts

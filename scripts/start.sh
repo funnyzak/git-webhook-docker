@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /app/scripts/utils.sh;
+
 mkdir -p -m 600 /root/.ssh
 mkdir -p -m 700 /app/code
 
@@ -42,21 +44,24 @@ fi
 
 chmod +x -R /custom_scripts
 
+notify_all "StartUp"
+
 # Run any commands passed by env
 if [ -n "$STARTUP_COMMANDS" ]; then
   echo "on startup command do: ${STARTUP_COMMANDS}" 
-  eval "$STARTUP_COMMANDS"
+  $STARTUP_COMMANDS || (echo "Start Up failed. Aborting;"; notify_error ; exit 1)
 else
     echo "no startup command. skiped."
 fi
 
-
 echo "on startup shell do..." 
+
 # Custom scripts
 source /usr/bin/run_scripts_on_startup.sh
 
 # run hook
 source /app/hook/hook.sh &
+
 
 # change hook match setting
 HOOK_CONF=$(cat /app/hook/hooks.json | sed -e "s/\${branch}/${GIT_BRANCH}/" | sed -e "s/\${token}/${HOOK_TOKEN}/")

@@ -53,7 +53,18 @@ The following flags are a list of all the currently supported options that can b
 * **STARTUP_COMMANDS** : Optional. Add any commands that will be run at the end of the start.sh script. left blank, will not execute.
 * **AFTER_PULL_COMMANDS** : Optional. Add any commands that will be run after pull. left blank, will not execute.
 * **BEFORE_PULL_COMMANDS** : Optional. Add any commands that will be run before pull. left blank, will not execute.
-  
+* **AFTER_PACKAGE_COMMANDS** : Optional. Add any commands that will be run after package. left blank, will not execute.
+
+### Notify
+
+* **NOTIFY_ACTION_LABEL**: Optional. notify action name define. default : `StartUp|BeforePull|AfterPull|AfterPackage`
+* **NOTIFY_ACTION_LIST**: Optional. notify action list. included events will be notified. default : `BeforePull|AfterPackage`
+* **NOTIFY_URL_LIST** : Optional. Notify link array , each separated by **|**
+* **IFTTT_HOOK_URL_LIST** : Optional. ifttt webhook url array , each separated by **|** [Official Site](https://ifttt.com/maker_webhooks).
+* **DINGTALK_TOKEN_LIST**: Optional. DingTalk Bot TokenList, each separated by **|** [Official Site](http://www.dingtalk.com).
+* **JISHIDA_TOKEN_LIST**: Optional. JiShiDa TokenList, each separated by **|**. [Official Site](http://push.ijingniu.cn/admin/index/).
+* **APP_NAME** : Optional. When setting notify, it is best to set.
+
 ---
 
 ## Volume
@@ -63,12 +74,37 @@ The following flags are a list of all the currently supported options that can b
 * **/custom_scripts/on_startup** :  which the scripts are executed at startup, traversing all the scripts and executing them sequentially
 * **/custom_scripts/before_pull** :  which the scripts are executed at before pull
 * **/custom_scripts/after_pull** :  which the scripts are executed at after pull
+* **/custom_scripts/after_package** :  which the scripts are executed at after package.
 
-### ssh-keygen
+
+
+## ssh-keygen
 
 `ssh-keygen -t rsa -b 4096 -C "youremail@gmail.com" -N "" -f ./id_rsa`
 
 ---
+
+
+## Display Package Elapsed Time
+
+show package elapsed second.
+
+```sh
+docker exec servername cat /tmp/ELAPSED_TIME
+```
+
+show package elapsed time label.
+
+```sh
+docker exec servername cat /tmp/ELAPSED_TIME_LABEL
+```
+
+show git commit hash that currently deployed successfully.
+```sh
+docker exec servername cat /tmp/CURRENT_GIT_COMMIT_ID
+```
+
+___
 
 ## Docker-Compose
 
@@ -96,7 +132,12 @@ services:
       - GIT_NAME=yourname
       - STARTUP_COMMANDS=echo "STARTUP_COMMANDS helllo"
       - AFTER_PULL_COMMANDS=echo "AFTER_PULL_COMMANDS hello"
-      - BEFORE_PULL_COMMANDS=echo "AFTER_PULL_COMMANDS hello"
+      - BEFORE_PULL_COMMANDS=echo "AFTER_PULL_COMMANDS”
+      - APP_NAME=myapp
+      - NOTIFY_ACTION_LABEL=已启动|源码拉取中..|源码已拉取最新,开始打包..|部署已完成
+      - NOTIFY_ACTION_LIST=StartUp|BeforePull|AfterPull|AfterPackage
+      - DINGTALK_TOKEN_LIST=dingtoken_one|dingtoken_two
+      - JISHIDA_TOKEN_LIST=jishida_token     
     restart: on-failure
     ports:
       - 1001:9000
