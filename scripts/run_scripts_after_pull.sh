@@ -5,5 +5,5 @@ if [ -n "$(ls -A /custom_scripts/after_pull/* 2>/dev/null)" ]; then
         "$file"
     done
 else 
-    echo "no files. skip."
+    echo "no after_pull shell. skip."
 fi
