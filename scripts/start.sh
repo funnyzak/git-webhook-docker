@@ -5,14 +5,14 @@ source /app/scripts/utils.sh;
 mkdir -p -m 600 /root/.ssh
 mkdir -p -m 700 /app/code
 
-# Disable Strict Host checking for non interactive git clones
+echo "Disable Strict Host checking for non interactive git clones"
 rm -f /root/.ssh/config
 echo -e "Host *\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
 
-# SSH key
+echo "Add SSH key Permission 600"
 chmod 600 /root/.ssh/id_rsa
 
-# Setup git variables
+echo "Setup git config"
 if [ ! -z "$GIT_EMAIL" ]; then
  git config --global user.email "$GIT_EMAIL"
 fi
@@ -21,7 +21,8 @@ if [ ! -z "$GIT_NAME" ]; then
  git config --global push.default simple
 fi
 
-# Dont pull code down if the .git folder exists
+
+echo "git cloneing. Dont pull code down if the /app/code/.git folder exists"
 if [ ! -d "/app/code/.git" ];then
   # Pull down code form git for our site!
   if [ ! -z "$GIT_REPO" ]; then
@@ -42,7 +43,9 @@ if [ ! -d "/app/code/.git" ];then
   fi
 fi
 
+echo "add scripts permission"
 chmod +x -R /custom_scripts
+chmod +x -R /app/hook
 
 notify_all "StartUp"
 
@@ -68,7 +71,7 @@ HOOK_CONF=$(cat /app/hook/hooks.json | sed -e "s/\${branch}/${GIT_BRANCH}/" | se
 
 echo $HOOK_CONF >/app/hook/githooks.json
 
-echo "hook branch> ${GIT_BRANCH}. hook token: ${HOOK_TOKEN}"
+echo "Hook branch> ${GIT_BRANCH}. hook token: ${HOOK_TOKEN}"
 
 if [ -n "$USE_HOOK" ]; then
   echo "start hook..."

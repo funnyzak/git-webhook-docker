@@ -137,7 +137,7 @@ services:
       - NOTIFY_ACTION_LABEL=已启动|源码拉取中..|源码已拉取最新,开始打包..|部署已完成
       - NOTIFY_ACTION_LIST=StartUp|BeforePull|AfterPull|AfterPackage
       - DINGTALK_TOKEN_LIST=dingtoken_one|dingtoken_two
-      - JISHIDA_TOKEN_LIST=jishida_token     
+      - JISHIDA_TOKEN_LIST=jishida_token 
     restart: on-failure
     ports:
       - 1001:9000

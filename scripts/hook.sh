@@ -4,7 +4,7 @@ set -e
 
 source /app/scripts/utils.sh;
 
-echo "starting run hook script================================"
+echo "================================starting run hook script================================"
 
 cd /app/code
 
@@ -50,8 +50,6 @@ fi
 echo "git pull code after shell do..." 
 source /usr/bin/run_scripts_after_pull.sh
 
-
-
 # after package command
 if [ -n "$AFTER_PACKAGE_COMMANDS" ]; then
     echo "after package command do: ${AFTER_PACKAGE_COMMANDS}" 
@@ -64,7 +62,6 @@ fi
 echo "after package shell do..." 
 source /usr/bin/run_scripts_after_package.sh
 
-
 # calc package elasped time
 elasped_package_time "end"
 
@@ -72,5 +69,4 @@ elasped_package_time "end"
 # after package notify
 notify_all "AfterPackage"
 
-
-echo "end run hook script================================"
+echo "================================end run hook script================================" 
