@@ -156,20 +156,16 @@ function notify_error(){
 # record end: elasped_package_time "end"
 function elasped_package_time(){
     if [ -n "$1" ]; then
-        # 计算部署耗时
         PULL_START_TS=`cat /tmp/PULL_START_TS`
-        ELAPSED_TIME=`expr $(date +%s) - $PULL_START_TS`
-        ELAPSED_TIME_M=`expr $ELAPSED_TIME / 60`
+        ELAPSED_TIME=`expr $(date +%s) - ${PULL_START_TS}`
+
+        ELAPSED_TIME_LABEL="${ELAPSED_TIME}秒"
         ELAPSED_TIME_S=`expr $ELAPSED_TIME % 60`
-        ELAPSED_TIME_LABEL="${ELAPSED_TIME_M}分${ELAPSED_TIME_S}秒"
 
         if [ $ELAPSED_TIME -ge 60 ]
         then
-            ELAPSED_TIME_LABEL="${ELAPSED_TIME_M}分${ELAPSED_TIME_S}秒"
-        else
-            ELAPSED_TIME_LABEL="${ELAPSED_TIME_S}秒"
+            ELAPSED_TIME_LABEL="`expr $ELAPSED_TIME / 60`分${ELAPSED_TIME_S}秒"
         fi
-        # 耗时临时缓存
         echo $ELAPSED_TIME > /tmp/ELAPSED_TIME
         echo $ELAPSED_TIME_LABEL > /tmp/ELAPSED_TIME_LABEL
     else

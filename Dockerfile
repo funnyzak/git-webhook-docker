@@ -49,4 +49,4 @@ WORKDIR /app/code
 EXPOSE 9000
 
 # run start script
-ENTRYPOINT ["sh", "/usr/bin/start.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/bin/start.sh"]
