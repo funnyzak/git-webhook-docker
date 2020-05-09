@@ -80,3 +80,5 @@ else
   echo "no set USE_HOOK. will run in 23h."
   while sleep 23h; do sh /app/hook/hook.sh; done
 fi
+
+exec "$@"
