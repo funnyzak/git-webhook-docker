@@ -12,8 +12,6 @@ function notify_url_single(){
          elasped_lable2="&_elasped=$(elasped_package_time_label)"
     fi
 
-    echo "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】Web Notify Notification Sending..."
-
     # current timestamp
     CURRENT_TS=$(date +%s)
     curl "$NOTIFY_URL" \
@@ -24,10 +22,9 @@ function notify_url_single(){
                 ${elasped_lable}
                 \"_action\": \"$ACTION_NAME\"
         }"
-    curl -G "$NOTIFY_URL" \
-        -d "_time=$CURRENT_TS$elasped_lable2&_name=$APP_NAME&_action=$ACTION_NAME"
+    curl --data-urlencode "_time=$CURRENT_TS$elasped_lable2&_name=$APP_NAME&_action=$ACTION_NAME" "$NOTIFY_URL" >> /var/log/webhook/notify.log
 
-    echo "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】Web Notify Notification Sended."
+    echo -e "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】Web Notify Notification Sended."
 }
 
 # send notification to dingtalk
@@ -39,7 +36,6 @@ function dingtalk_notify_single() {
          elasped_lable="Elasped Time: `elasped_package_time_label`"
     fi
     
-    echo "$APP_NAME $ACTION_NAME. DingTalk Notification Sending..."
     curl "https://oapi.dingtalk.com/robot/send?access_token=${TOKEN}" \
         -H "Content-Type: application/json" \
         -d '{
@@ -51,9 +47,9 @@ function dingtalk_notify_single() {
             "at": {
             "isAtAll": true
             }
-        }'
+        }' >> /var/log/webhook/notify.log
 
-    echo "$APP_NAME $ACTION_NAME. DingTalk Notification Sended."
+    echo -e "$APP_NAME $ACTION_NAME. DingTalk Notification Sended."
 }
 
 # send notification to jishida
@@ -65,14 +61,13 @@ function jishida_notify_single() {
          elasped_lable="Elasped Time: `elasped_package_time_label`"
     fi
     
-    echo "$APP_NAME $ACTION_NAME. JiShiDa Notification Sending..."
     curl --location --request POST "http://push.ijingniu.cn/send" \
         --header 'Content-Type: application/x-www-form-urlencoded' \
         --data-urlencode "key=${TOKEN}" \
         --data-urlencode "head=${APP_NAME}${ACTION_NAME}." \
-        --data-urlencode "body=${ACTION_NAME}, Branch：$(parse_git_branch);  Commit Msg：$(parse_git_message);  Commit ID: $(parse_git_hash);  ${elasped_lable}."
+        --data-urlencode "body=${ACTION_NAME}, Branch：$(parse_git_branch);  Commit Msg：$(parse_git_message);  Commit ID: $(parse_git_hash);  ${elasped_lable}." >> /var/log/webhook/notify.log
 
-    echo "$APP_NAME $ACTION_NAME. JiShiDa Notification Sended."
+    echo -e "$APP_NAME $ACTION_NAME. JiShiDa Notification Sended."
 }
 
 function ifttt_single() {
@@ -83,9 +78,23 @@ function ifttt_single() {
          elasped_lable=`elasped_package_time_label`
     fi
     
-     echo "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】IFTTT Notify Notification Sended."
-    curl -X POST -H "Content-Type: application/json" -d "{\"value1\":\"$APP_NAME\",\"value2\":\"$ACTION_NAME\",\"value3\":\"${elasped_lable}\"}" "$NOTIFY_URL"
-     echo "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】IFTTT Notify Notification Sended."
+    curl -X POST -H "Content-Type: application/json" -d "{\"value1\":\"$APP_NAME\",\"value2\":\"$ACTION_NAME\",\"value3\":\"${elasped_lable}\"}" "$NOTIFY_URL" >> /var/log/webhook/notify.log
+     echo -e "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】IFTTT Notify Notification Sended."
+}
+
+# Telegram bot notify
+function telegram_bot_notify() {
+    ACTION_NAME=`parse_action_label "$1"`
+    TG_BOT_SETTING=$2
+
+    telegram_set=(${TG_BOT_SETTING//###/ })
+    telegram_token=(${telegram_set[0]})
+    telegram_chat_id=(${telegram_set[1]})
+    telegram_message="$APP_NAME $ACTION_NAME."
+
+	curl --data-urlencode "text=$telegram_message" "https://api.telegram.org/bot$telegram_token/sendMessage?chat_id=$telegram_chat_id" >> /var/log/webhook/notify.log
+
+    echo "$APP_NAME $ACTION_NAME. Telegram Bot Notification Sended."
 }
 
 function parse_action_label(){
@@ -128,6 +137,14 @@ function notify_run(){
     fi
 }
 
+function notify(){
+    notify_run "notify_url_single" "$1" "$NOTIFY_URL_LIST"
+    notify_run "telegram_bot_notify" "$1" "$TELEGRAM_BOT_TOKEN"
+    notify_run "dingtalk_notify_single" "$1" "$DINGTALK_TOKEN_LIST"
+    notify_run "jishida_notify_single" "$1" "$JISHIDA_TOKEN_LIST"
+    notify_run "ifttt_single" "$1" "$IFTTT_HOOK_URL_LIST"
+}
+
 # notify all notify service
 function notify_all(){
     if [ ! -n "$NOTIFY_ACTION_LIST" ]; then
@@ -136,19 +153,12 @@ function notify_all(){
     action_str_idx=`awk "BEGIN{ print index(\"$NOTIFY_ACTION_LIST\",\"$1\") }"`
 
     if [ $action_str_idx -gt 0 -o $1 == "Error" ]; then
-        notify_run "notify_url_single" "$1" "$NOTIFY_URL_LIST"
-        notify_run "dingtalk_notify_single" "$1" "$DINGTALK_TOKEN_LIST"
-        notify_run "jishida_notify_single" "$1" "$JISHIDA_TOKEN_LIST"
-        notify_run "ifttt_single" "$1" "$IFTTT_HOOK_URL_LIST"
+        notify $1
     fi
 }
 
 function notify_error(){
-    ERROR_MSG="Package Error, Please Check Runtime Logs"
-    notify_run "notify_url_single" "$ERROR_MSG" "$NOTIFY_URL_LIST"
-    notify_run "dingtalk_notify_single" "$ERROR_MSG" "$DINGTALK_TOKEN_LIST"
-    notify_run "jishida_notify_single" "$ERROR_MSG" "$JISHIDA_TOKEN_LIST"
-    notify_run "ifttt_single" "$ERROR_MSG" "$IFTTT_HOOK_URL_LIST"
+    notify "Package Error, Please Check Runtime Logs"
 }
 
 # record end time as long as "$1" is present

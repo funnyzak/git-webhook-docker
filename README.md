@@ -5,7 +5,7 @@ Pull your project git code into a data volume and trigger event via Webhook.
 [![Docker Stars](https://img.shields.io/docker/stars/funnyzak/git-webhook.svg?style=flat-square)](https://hub.docker.com/r/funnyzak/git-webhook/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/funnyzak/git-webhook.svg?style=flat-square)](https://hub.docker.com/r/funnyzak/git-webhook/)
 
-This image is based on Alpine Linux image, which is a 433MB image.
+This image is based on Alpine Linux image, which is a 439MB image.
 
 Download size of this image is:
 
@@ -18,7 +18,8 @@ Docker Pull Command: `docker pull funnyzak/git-webhook`
 Webhook Url: [http://hostname:9000/hooks/git-webhook?token=HOOK_TOKEN](#)
 
 ---
-### Main Modules
+
+## Main Modules
 
 * java 1.8
 * go 1.12.12
@@ -70,6 +71,7 @@ The following flags are a list of all the currently supported options that can b
 * **NOTIFY_ACTION_LABEL**: Optional. notify action name define. default : `StartUp|BeforePull|AfterPull|AfterPackage`
 * **NOTIFY_ACTION_LIST**: Optional. notify action list. included events will be notified. default : `BeforePull|AfterPackage`
 * **NOTIFY_URL_LIST** : Optional. Notify link array , each separated by **|**
+* **TELEGRAM_BOT_TOKEN**: Optional. telegram Bot Token-chatid setting. eg: **token###chatid|token2###chatid2**. each separated by **|** [Official Site](https://core.telegram.org/api).
 * **IFTTT_HOOK_URL_LIST** : Optional. ifttt webhook url array , each separated by **|** [Official Site](https://ifttt.com/maker_webhooks).
 * **DINGTALK_TOKEN_LIST**: Optional. DingTalk Bot TokenList, each separated by **|** [Official Site](http://www.dingtalk.com).
 * **JISHIDA_TOKEN_LIST**: Optional. JiShiDa TokenList, each separated by **|**. [Official Site](http://push.ijingniu.cn/admin/index/).
@@ -86,14 +88,23 @@ The following flags are a list of all the currently supported options that can b
 * **/custom_scripts/after_pull** :  which the scripts are executed at after pull
 * **/custom_scripts/after_package** :  which the scripts are executed at after package.
 
-
-
 ## ssh-keygen
 
 `ssh-keygen -t rsa -b 4096 -C "youremail@gmail.com" -N "" -f ./id_rsa`
 
 ---
 
+## SendMessage
+
+You can use notifications by call "/app/scripts/utils.sh" in the execution script.
+
+```bash
+source /app/scripts/utils.sh;
+
+notify_all "hello world"
+```
+
+---
 
 ## Display Package Elapsed Time
 
@@ -146,8 +157,9 @@ services:
       - APP_NAME=myapp
       - NOTIFY_ACTION_LABEL=已启动|源码拉取中..|源码已拉取最新,开始打包..|部署已完成
       - NOTIFY_ACTION_LIST=StartUp|BeforePull|AfterPull|AfterPackage
+      - TELEGRAM_BOT_TOKEN=123456789:SDFW33-CbovPM2TeHFCiPUDTLy1uYmN04I###9865678987
       - DINGTALK_TOKEN_LIST=dingtoken_one|dingtoken_two
-      - JISHIDA_TOKEN_LIST=jishida_token 
+      - JISHIDA_TOKEN_LIST=jishida_token
     restart: on-failure
     ports:
       - 1001:9000
