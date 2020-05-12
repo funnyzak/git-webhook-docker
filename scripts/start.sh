@@ -22,7 +22,7 @@ if [ ! -z "$GIT_NAME" ]; then
 fi
 
 
-echo "git cloneing. Dont pull code down if the /app/code/.git folder exists"
+echo -e "git cloneing. Dont pull code down if the /app/code/.git folder exists"
 if [ ! -d "/app/code/.git" ];then
   # Pull down code form git for our site!
   if [ ! -z "$GIT_REPO" ]; then
@@ -43,7 +43,7 @@ if [ ! -d "/app/code/.git" ];then
   fi
 fi
 
-echo "add scripts permission"
+echo -e "add scripts permission"
 chmod +x -R /custom_scripts
 chmod +x -R /app/hook
 
@@ -51,13 +51,13 @@ notify_all "StartUp"
 
 # Run any commands passed by env
 if [ -n "$STARTUP_COMMANDS" ]; then
-  echo "on startup command do: ${STARTUP_COMMANDS}" 
-  $STARTUP_COMMANDS || (echo "Start Up failed. Aborting;"; notify_error ; exit 1)
+  echo -e "on startup command do: ${STARTUP_COMMANDS}" 
+  $STARTUP_COMMANDS || (echo -e "Start Up failed. Aborting;"; notify_error ; exit 1)
 else
-    echo "no startup command. skiped."
+    echo -e "no startup command. skiped."
 fi
 
-echo "on startup shell do..." 
+echo -e "on startup shell do..." 
 
 # Custom scripts
 source /usr/bin/run_scripts_on_startup.sh
@@ -69,15 +69,15 @@ source /app/hook/hook.sh &
 # change hook match setting
 HOOK_CONF=$(cat /app/hook/hooks.json | sed -e "s/\${branch}/${GIT_BRANCH}/" | sed -e "s/\${token}/${HOOK_TOKEN}/")
 
-echo $HOOK_CONF >/app/hook/githooks.json
+echo -e $HOOK_CONF >/app/hook/githooks.json
 
-echo "Hook branch> ${GIT_BRANCH}. hook token: ${HOOK_TOKEN}"
+echo -e "Hook branch> ${GIT_BRANCH}. hook token: ${HOOK_TOKEN}"
 
 if [ -n "$USE_HOOK" ]; then
-  echo "start hook..."
+  echo -e "start hook..."
   /go/bin/webhook -hooks /app/hook/githooks.json -verbose
 else
-  echo "no set USE_HOOK. will run in 23h."
+  echo -e "no set USE_HOOK. will run in 23h."
   while sleep 23h; do sh /app/hook/hook.sh; done
 fi
 
