@@ -94,7 +94,7 @@ function telegram_bot_notify() {
 
 	curl --speed-time 3 --speed-limit 1 --data-urlencode "text=$telegram_message" "https://api.telegram.org/bot$telegram_token/sendMessage?chat_id=$telegram_chat_id" > /dev/null 2>>/var/log/webhook/notify.log
 
-    echo "$APP_NAME $ACTION_NAME. Telegram Bot Notification Sended."
+    echo -e "$APP_NAME $ACTION_NAME. Telegram Bot Notification Sended."
 }
 
 function parse_action_label(){
