@@ -16,7 +16,7 @@ LABEL org.label-schema.vendor="potato<silenceace@gmail.com>" \
 ENV LANG=C.UTF-8
 
 # Create Dir
-RUN mkdir -p /app/hook && mkdir -p /app/code
+RUN mkdir -p /app/hook && mkdir -p /app/code && mkdir -p /var/log/webhook
 
 # Copy webhook config
 COPY conf/hooks.json /app/hook/hooks.json

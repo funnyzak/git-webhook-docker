@@ -14,7 +14,7 @@ function notify_url_single(){
 
     # current timestamp
     CURRENT_TS=$(date +%s)
-    curl "$NOTIFY_URL" \
+    curl --speed-time 3 --speed-limit 1 "$NOTIFY_URL" \
         -H "Content-Type: application/json" \
         -d "{
                 \"_time\": \"$CURRENT_TS\",
@@ -22,7 +22,7 @@ function notify_url_single(){
                 ${elasped_lable}
                 \"_action\": \"$ACTION_NAME\"
         }"
-    curl --data-urlencode "_time=$CURRENT_TS$elasped_lable2&_name=$APP_NAME&_action=$ACTION_NAME" "$NOTIFY_URL" >> /var/log/webhook/notify.log
+    curl --speed-time 3 --speed-limit 1 --data-urlencode "_time=$CURRENT_TS$elasped_lable2&_name=$APP_NAME&_action=$ACTION_NAME" "$NOTIFY_URL" > /dev/null 2>>/var/log/webhook/notify.log
 
     echo -e "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】Web Notify Notification Sended."
 }
@@ -36,7 +36,7 @@ function dingtalk_notify_single() {
          elasped_lable="Elasped Time: `elasped_package_time_label`"
     fi
     
-    curl "https://oapi.dingtalk.com/robot/send?access_token=${TOKEN}" \
+    curl --speed-time 3 --speed-limit 1 "https://oapi.dingtalk.com/robot/send?access_token=${TOKEN}" \
         -H "Content-Type: application/json" \
         -d '{
         "msgtype": "markdown",
@@ -47,7 +47,7 @@ function dingtalk_notify_single() {
             "at": {
             "isAtAll": true
             }
-        }' >> /var/log/webhook/notify.log
+        }' > /dev/null 2>>/var/log/webhook/notify.log
 
     echo -e "$APP_NAME $ACTION_NAME. DingTalk Notification Sended."
 }
@@ -61,11 +61,11 @@ function jishida_notify_single() {
          elasped_lable="Elasped Time: `elasped_package_time_label`"
     fi
     
-    curl --location --request POST "http://push.ijingniu.cn/send" \
+    curl --speed-time 3 --speed-limit 1 --location --request POST "http://push.ijingniu.cn/send" \
         --header 'Content-Type: application/x-www-form-urlencoded' \
         --data-urlencode "key=${TOKEN}" \
         --data-urlencode "head=${APP_NAME}${ACTION_NAME}." \
-        --data-urlencode "body=${ACTION_NAME}, Branch：$(parse_git_branch);  Commit Msg：$(parse_git_message);  Commit ID: $(parse_git_hash);  ${elasped_lable}." >> /var/log/webhook/notify.log
+        --data-urlencode "body=${ACTION_NAME}, Branch：$(parse_git_branch);  Commit Msg：$(parse_git_message);  Commit ID: $(parse_git_hash);  ${elasped_lable}." > /dev/null 2>>/var/log/webhook/notify.log
 
     echo -e "$APP_NAME $ACTION_NAME. JiShiDa Notification Sended."
 }
@@ -78,7 +78,7 @@ function ifttt_single() {
          elasped_lable=`elasped_package_time_label`
     fi
     
-    curl -X POST -H "Content-Type: application/json" -d "{\"value1\":\"$APP_NAME\",\"value2\":\"$ACTION_NAME\",\"value3\":\"${elasped_lable}\"}" "$NOTIFY_URL" >> /var/log/webhook/notify.log
+    curl --speed-time 3 --speed-limit 1 -X POST -H "Content-Type: application/json" -d "{\"value1\":\"$APP_NAME\",\"value2\":\"$ACTION_NAME\",\"value3\":\"${elasped_lable}\"}" "$NOTIFY_URL" > /dev/null 2>>/var/log/webhook/notify.log
      echo -e "$APP_NAME $ACTION_NAME. 【$NOTIFY_URL】IFTTT Notify Notification Sended."
 }
 
@@ -92,7 +92,7 @@ function telegram_bot_notify() {
     telegram_chat_id=(${telegram_set[1]})
     telegram_message="$APP_NAME $ACTION_NAME."
 
-	curl --data-urlencode "text=$telegram_message" "https://api.telegram.org/bot$telegram_token/sendMessage?chat_id=$telegram_chat_id" >> /var/log/webhook/notify.log
+	curl --speed-time 3 --speed-limit 1 --data-urlencode "text=$telegram_message" "https://api.telegram.org/bot$telegram_token/sendMessage?chat_id=$telegram_chat_id" > /dev/null 2>>/var/log/webhook/notify.log
 
     echo "$APP_NAME $ACTION_NAME. Telegram Bot Notification Sended."
 }
