@@ -16,7 +16,7 @@ elasped_package_time
 # git pull code before script run
 if [ -n "$BEFORE_PULL_COMMANDS" ]; then
     echo -e "git pull code before command do: ${BEFORE_PULL_COMMANDS}" 
-    $BEFORE_PULL_COMMANDS || (echo -e "git pull code before Command failed. Aborting!"; exit 1)
+    (eval "$BEFORE_PULL_COMMANDS") || (echo -e "git pull code before Command failed. Aborting!"; exit 1)
 else
     echo -e "no before pull command. skiped."
 fi
@@ -41,7 +41,7 @@ notify_all "AfterPull"
 # git pull code after script run
 if [ -n "$AFTER_PULL_COMMANDS" ]; then
     echo -e "git pull code after command do: ${AFTER_PULL_COMMANDS}" 
-    $AFTER_PULL_COMMANDS || (echo -e "git pull code after Command failed. Aborting!"; exit 1)
+    (eval "$AFTER_PULL_COMMANDS") || (echo -e "git pull code after Command failed. Aborting!"; exit 1)
 else
     echo -e "no after pull command. skiped."
 fi
@@ -53,7 +53,7 @@ source /usr/bin/run_scripts_after_pull.sh
 # after package command
 if [ -n "$AFTER_PACKAGE_COMMANDS" ]; then
     echo -e "after package command do: ${AFTER_PACKAGE_COMMANDS}" 
-    $AFTER_PACKAGE_COMMANDS || (echo -e "After Package Command failed. Aborting!"; notify_error; exit 1)
+    (eval "$AFTER_PACKAGE_COMMANDS") || (echo -e "After Package Command failed. Aborting!"; notify_error; exit 1)
 else
     echo -e "no after package command. skiped."
 fi

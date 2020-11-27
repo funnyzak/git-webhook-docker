@@ -52,7 +52,7 @@ notify_all "StartUp"
 # Run any commands passed by env
 if [ -n "$STARTUP_COMMANDS" ]; then
   echo -e "on startup command do: ${STARTUP_COMMANDS}" 
-  $STARTUP_COMMANDS || (echo -e "Start Up failed. Aborting;"; notify_error ; exit 1)
+  (eval "$STARTUP_COMMANDS") || (echo -e "Start Up failed. Aborting;"; notify_error ; exit 1)
 else
     echo -e "no startup command. skiped."
 fi
